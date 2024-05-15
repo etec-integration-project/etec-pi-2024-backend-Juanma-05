@@ -16,7 +16,7 @@ En la consola de tu editor realiza los siguientes pasos
   docker compose up --build
   ```  
 4. Accede a la aplicacion en el navegador
-  Cuando los contenedores ya esten funcionando correctamente accede en tu navegador a la direccion 
+  Cuando los contenedores ya esten funcionando correctamente accede en tu navegador y por la direccion si lo inicias de tu host local. 
   ```
   http://localhost:3000/ping
   ```
