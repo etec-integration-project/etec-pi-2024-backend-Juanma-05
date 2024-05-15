@@ -4,11 +4,11 @@ En la consola de tu editor realiza los siguientes pasos
 1. Clona el repositorio
 
   ```
-  git clone https://github.com/etec-integration-project/first-tdd-Juanma-05.git
+  git clone https://github.com/etec-integration-project/etec-pi-2024-backend-Juanma-05.git
   ```
 2. Haz un cd para moverte hasta el directorio del proyecto
   ```
-  cd first-tdd-Juanma-05
+  cd etec-pi-2024-backend-Juanma-05
   ```
   
 3. Inicia el contenedor
