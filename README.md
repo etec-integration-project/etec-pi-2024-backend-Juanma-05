@@ -20,3 +20,5 @@ En la consola de tu editor realiza los siguientes pasos
   ```
   http://localhost:3000/ping
   ```
+
+token git: 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
