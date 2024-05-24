@@ -1,5 +1,5 @@
 -- Crear la tabla 'Ids' para generar IDs autoincrementales
-CREATE TABLE Ids (
+CREATE TABLE Id (
     id INT AUTO_INCREMENT PRIMARY KEY
 );
 

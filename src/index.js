@@ -11,9 +11,6 @@ console.log({
     password: process.env.MYSQLDB_ROOT_PASSWORD,
     port: process.env.MYSQLDB_DOCKER_PORT,
 
-
-
-
 })
 
 const pool = createPool({
@@ -22,6 +19,7 @@ const pool = createPool({
     password: "123456",
     port: 3306
 })
+
 
 app.get("/", (req, res)=>{
     res.send("helloword")
