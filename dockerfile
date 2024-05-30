@@ -8,4 +8,4 @@ COPY . .
 CMD npm start 
 
 ## https://www.youtube.com/watch?v=eOGlouhsIjY
-## https://www.youtube.com/watch?v=U5C_VbKCaIc
+## https://www.youtube.com/watch?v=U5C_VbKCaIc 38:11

@@ -2,8 +2,11 @@ import express from "express"
 import { createPool } from "mysql2/promise"
 import { config } from "dotenv"
 
-
+//inicializacion
 const app = express()
+
+//Configuracion
+app.set('port', process.env.PORT || 3000);
 
 console.log({
     host: process.env.MYSQLDB_HOST,
@@ -20,9 +23,19 @@ const pool = createPool({
     port: 3306
 })
 
+//configuracion de pug
+app.set('views', './vistas')
+app.set('view engine', 'pug')
+
+//configuracion de archivos estaticos
+app.use(express.static('./vistas'))
+app.use(express.static('./src'))
+app.use(express.static('./css'))
+
 
 app.get("/", (req, res)=>{
-    res.send("helloword")
+    //res.send("helloword")}
+    res.render('index')
 })
 
 app.get("/ping", async(req, res)=>{
@@ -30,5 +43,7 @@ app.get("/ping", async(req, res)=>{
     res.json(result[0])
 })
 
-app.listen(3000)
+//Run server
+app.listen(app.get('port'), () =>
+    console.log('Servidor escuchando en puerto ', app.get('port')));
 console.log("Corriendo")
