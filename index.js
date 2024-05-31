@@ -24,19 +24,33 @@ const pool = createPool({
 })
 
 //configuracion de pug
-app.set('views', './vistas')
-app.set('view engine', 'pug')
+app.set('view engine', 'ejs')
 
-//configuracion de archivos estaticos
-app.use(express.static('./vistas'))
-app.use(express.static('./src'))
-app.use(express.static('./css'))
-
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
 
 app.get("/", (req, res)=>{
     //res.send("helloword")}
-    res.render('index')
-})
+    res.render('register');
+});
+
+app.post("/validar",(req, res)=>{
+    const datos = req.body
+
+    console.log(datos);
+    let gmail = datos.gmail;
+    let contraseña = datos.contraseña;
+
+    let register = "INSERT INTO tabla_usuario(Gamil, Contraseña) VALUES ('"+gmail+"', '"+contraseña+"')";
+    pool.query(register, function(error){
+        if (error){
+            throw error;
+        }else {
+            console.log("Datos guardados correctamete")
+        }
+    })  
+});
+
 
 app.get("/ping", async(req, res)=>{
     const result = await pool.query("SELECT NOW()")
