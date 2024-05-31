@@ -22,3 +22,5 @@ En la consola de tu editor realiza los siguientes pasos
   ```
 
 token git: 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
+
+31/05: pude agregar los formularios de register de usuario, con un console.log que agrege te muestra el usario registrado. Pero no pude hacer que los agrege a la base de datos porque no se me actualizan las tablas del Mysql, ya lo voy a resolver asi se pueden agregar los usuarios a la base de datos y asi poder empezar con el inicio de sesion. 
