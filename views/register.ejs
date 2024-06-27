@@ -8,14 +8,19 @@
 <body>
     <h1>Registro de usuario</h1>
     
-    <form action="/validar" method="post">
+    <form action="/register" method="post">
         Gmail:
         <input type="email" name="gmail" id="gmail"><br><br>
 
         Contraseña:
         <input type="password" name="contraseña" id="contraseña"><br><br>
 
-        <input type="submit" value="Registrar">
+        <input type="submit" value="Registrar" onclick="setFormAction('/register')">
+        <Link to="/sesion">
+        <input type="submit" value="Iniciar Sesion" onclick="setFormAction('/login')">
+        </Link>
+
+
     </form>
 
 </body>
