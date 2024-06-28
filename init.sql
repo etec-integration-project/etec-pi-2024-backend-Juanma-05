@@ -1,6 +1,0 @@
-CREATE TABLE usuario (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    Gmail VARCHAR(255) UNIQUE NOT NULL,
-    Contraseña VARCHAR(255) NOT NULL
-);
-

@@ -1,5 +1,6 @@
 import express from "express"
-import { createPool } from "mysql2/promise"
+import bodyParser from 'body-parser';
+import { Sequelize, Model, DataTypes } from 'sequelize';
 import { config } from "dotenv"
 
 //inicializacion
@@ -8,90 +9,75 @@ const app = express()
 //Configuracion
 app.set('port', process.env.PORT || 3000);
 
-console.log({
-    host: process.env.MYSQLDB_HOST,
-    user:'root',
-    password: process.env.MYSQLDB_ROOT_PASSWORD,
-    port: process.env.MYSQLDB_DOCKER_PORT,
+config();
 
-})
+//
+const database = process.env.DATABASE_NAME
+console.log(database)
+const username = process.env.DATABASE_USERNAME
+console.log(username)
+const password = process.env.DATABASE_PASSWORD
+console.log(password)
+const host = process.env.DATABASE_HOST
+console.log(host)
+const sequelize = new Sequelize(
+    database,
+    username,
+    password,
+    {
+        dialect: 'mysql',
+        host: host
+    });
 
-const pool = createPool({
-    host: "mysqldb",
-    user: "root",
-    password: "123456",
-    port: 3306
-})
+    class Usuario extends Model { }
+    Usuario.init({
+        name: DataTypes.STRING,
+        email: DataTypes.STRING,
+        password: DataTypes.STRING
+    }, { sequelize, modelName: 'usuario' });
 
-//configuracion de pug
-app.set('view engine', 'ejs')
+sequelize.sync();
 
-app.use(express.json());
-app.use(express.urlencoded({extended:false}));
 
-app.get("/", (req, res)=>{
-    //res.send("helloword")}
-    res.render('register');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.get('/users', async (req, res) => {
+    const users = await Usuario.findAll();
+    res.json(users);
 });
 
-app.get('/login', (req, res) => {
-    res.render('login');
+app.get('/users/:id', async (req, res) => {
+    const user = await Usuario.findByPk(req.params.id);
+    res.json(user);
 });
 
-app.post("/register",(req, res)=>{
-    const datos = req.body
-
-    console.log(datos);
-    let gmail = datos.gmail;
-    let contraseña = datos.contraseña;
-
-    let buscar = "SELECT * FROM tabla_usuario WHERE Gmail = "+gmail+"";
-    conexion.query(buscar, function(error, row){
-        if (error){
-            throw error;
-        }else {
-            if (row.length>0){
-                console.log("No se puede registrar usuario ya existe")
-            }else{
-                let register = "INSERT INTO tabla_usuario(Gamil, Contraseña) VALUES ('"+gmail+"', '"+contraseña+"')";
-                pool.query(register, function(error){
-                    if (error){
-                        throw error;
-                    }else {
-                        console.log("Datos guardados correctamete")
-                    }
-                });
-                
-            }
-        }
-    })
-
-  
+app.post('/users', async (req, res) => {
+    const user = await Usuario.create(req.body);
+    res.json(user);
 });
 
-app.post('/login', async (req, res) => {
-    const { gmail, contraseña } = req.body;
-    try {
-        // Buscar el usuario por su Gmail
-        const [rows] = await pool.query('SELECT * FROM tabla_usuario WHERE Gmail = ?', [gmail]);
-        if (rows.length === 0) {
-            return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
-        }
-
-        const user = rows[0];
-
-        // Comparar la contraseña encriptada
-        const isMatch = await bcrypt.compare(contraseña, user.Contraseña);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Usuario o contraseña incorrectos' });
-        }
-
-        res.json({ message: 'Inicio de sesión exitoso' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error en la base de datos' });
+app.put('/users/:id', async (req, res) => {
+    const user = await Usuario.findByPk(req.params.id);
+    if (user) {
+        await user.update(req.body);
+        res.json(user);
+    } else {
+        res.status(404).json({ message: 'User not found' });
     }
 });
+
+app.delete('/users/:id', async (req, res) => {
+    const user = await Usuario.findByPk(req.params.id);
+    if (user) {
+        await user.destroy();
+        res.json({ message: 'User deleted' });
+    } else {
+        res.status(404).json({ message: 'User not found' });
+    }
+});
+
+
 
 app.get("/ping", async(req, res)=>{
     const result = await pool.query("SELECT NOW()")
@@ -102,3 +88,4 @@ app.get("/ping", async(req, res)=>{
 app.listen(app.get('port'), () =>
     console.log('Servidor escuchando en puerto ', app.get('port')));
 console.log("Corriendo")
+

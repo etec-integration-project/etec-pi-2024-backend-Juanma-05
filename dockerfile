@@ -7,6 +7,7 @@ RUN npm install
 COPY . .
 CMD npm start 
 
-## https://www.youtube.com/watch?v=eOGlouhsIjY
-## https://www.youtube.com/watch?v=U5C_VbKCaIc 38:11
-## https://www.youtube.com/watch?v=aHPeMYFh5Cg finalizado
+
+##entrar a la base de datos local, con el host:127.0.0.1 | port:3006
+##ahi crear el esquema con la base de datos "backend"
+##para corroborar los metodos post-get abrir postam  poner http://localhost:3000/users
