@@ -6,6 +6,9 @@ import { config } from "dotenv"
 //inicializacion
 const app = express()
 
+app.set('view engine', 'ejs');
+
+
 //Configuracion
 app.set('port', process.env.PORT || 3000);
 
@@ -36,6 +39,13 @@ const sequelize = new Sequelize(
         password: DataTypes.STRING
     }, { sequelize, modelName: 'usuario' });
 
+    class Productos extends Model { }
+    Productos.init({
+        product: DataTypes.STRING,
+        url: DataTypes.STRING,
+    }, { sequelize, modelName: 'productos' });
+
+
 sequelize.sync();
 
 
@@ -47,45 +57,94 @@ app.get('/users', async (req, res) => {
     res.json(users);
 });
 
-app.get('/users/:id', async (req, res) => {
-    const user = await Usuario.findByPk(req.params.id);
-    res.json(user);
-});
-
 app.post('/users', async (req, res) => {
     const user = await Usuario.create(req.body);
     res.json(user);
 });
 
-app.put('/users/:id', async (req, res) => {
-    const user = await Usuario.findByPk(req.params.id);
-    if (user) {
-        await user.update(req.body);
-        res.json(user);
-    } else {
-        res.status(404).json({ message: 'User not found' });
-    }
-});
-
-app.delete('/users/:id', async (req, res) => {
-    const user = await Usuario.findByPk(req.params.id);
-    if (user) {
-        await user.destroy();
-        res.json({ message: 'User deleted' });
-    } else {
-        res.status(404).json({ message: 'User not found' });
-    }
+app.post('/products', async (req, res) => {
+    const product = await Productos.create(req.body);
+    res.json(product);
 });
 
 
+app.get('/login', (req, res) => {
+    res.render('login');
+});
 
-app.get("/ping", async(req, res)=>{
-    const result = await pool.query("SELECT NOW()")
-    res.json(result[0])
-})
+// Renderizar página de registro
+app.get('/register', (req, res) => {
+    res.render('register');
+});
 
-//Run server
+app.post('/register', async (req, res) => {
+    const { name, email, password } = req.body;
+    
+    try {
+        // si el correo electrónico ya está registrado
+        const existingUser = await Usuario.findOne({ where: { email } });
+        
+        if (existingUser) {
+            // Si el correo ya está registrado, mostrar mensaje de error
+            return res.render('register', { error: 'Este correo electrónico ya está registrado' });
+        }
+         
+        const newUser = await Usuario.create({ name, email, password });
+        res.redirect('/login'); 
+    } catch (error) {
+        console.error('Error en registro:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    
+    try {
+        const user = await Usuario.findOne({ where: { email, password } });
+        
+        if (user) {
+            res.redirect('/inicio'); 
+        } else {
+            res.render('login', { error: 'Credenciales inválidas, intente de nuevo'});
+        }
+    } catch (error) {
+        console.error('Error en login:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
 app.listen(app.get('port'), () =>
-    console.log('Servidor escuchando en puerto ', app.get('port')));
+console.log('Servidor escuchando en puerto ', app.get('port')));
 console.log("Corriendo")
+
+// app.get('/users/:id', async (req, res) => {
+    //     const user = await Usuario.findByPk(req.params.id);
+    //     res.json(user);
+    // });
+    
+    
+    
+    // app.put('/users/:id', async (req, res) => {
+        //     const user = await Usuario.findByPk(req.params.id);
+        //     if (user) {
+            //         await user.update(req.body);
+            //         res.json(user);
+            //     } else {
+                //         res.status(404).json({ message: 'User not found' });
+                //     }
+                // });
+                
+    // app.delete('/users/:id', async (req, res) => {
+    //     const user = await Usuario.findByPk(req.params.id);
+    //     if (user) {
+    //         await user.destroy();
+    //         res.json({ message: 'User deleted' });
+    //     } else {
+    //         res.status(404).json({ message: 'User not found' });
+    //     }
+    // });
+                
 
