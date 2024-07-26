@@ -2,11 +2,14 @@ import express from "express"
 import bodyParser from 'body-parser';
 import { Sequelize, Model, DataTypes } from 'sequelize';
 import { config } from "dotenv"
+import cors from 'cors';
+
 
 //inicializacion
 const app = express()
 
 app.set('view engine', 'ejs');
+app.use(cors());
 
 
 //Configuracion
