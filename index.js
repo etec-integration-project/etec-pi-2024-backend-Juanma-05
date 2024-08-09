@@ -84,21 +84,43 @@ app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     
     try {
-        // si el correo electrónico ya está registrado
+        // Verifica si el correo electrónico ya está registrado
         const existingUser = await Usuario.findOne({ where: { email } });
         
         if (existingUser) {
-            // Si el correo ya está registrado, mostrar mensaje de error
-            return res.render('register', { error: 'Este correo electrónico ya está registrado' });
+            // Si el correo ya está registrado, enviar un mensaje de error en formato JSON
+            return res.status(400).json({ error: 'Este correo electrónico ya está registrado' });
         }
-         
+        
+        // Crea un nuevo usuario
         const newUser = await Usuario.create({ name, email, password });
-        res.redirect('/login'); 
+        res.status(200).json({ message: 'Registro exitoso' });
     } catch (error) {
         console.error('Error en registro:', error);
-        res.status(500).send('Error interno del servidor');
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
+
+// app.post('/register', async (req, res) => {
+//     const { name, email, password } = req.body;
+    
+//     try {
+//         // si el correo electrónico ya está registrado
+//         const existingUser = await Usuario.findOne({ where: { email } });
+        
+//         if (existingUser) {
+//             // Si el correo ya está registrado, mostrar mensaje de error
+//             return res.render('register', { error: 'Este correo electrónico ya está registrado' });
+//         }
+         
+//         const newUser = await Usuario.create({ name, email, password });
+//         res.redirect('/login'); 
+//     } catch (error) {
+//         console.error('Error en registro:', error);
+//         res.status(500).send('Error interno del servidor');
+//     }
+// });
 
 
 
