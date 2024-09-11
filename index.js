@@ -45,7 +45,9 @@ const sequelize = new Sequelize(
     class Productos extends Model { }
     Productos.init({
         product: DataTypes.STRING,
+        price: DataTypes.NUMBER,
         url: DataTypes.STRING,
+
     }, { sequelize, modelName: 'productos' });
 
 
@@ -102,74 +104,33 @@ app.post('/register', async (req, res) => {
 });
 
 
-// app.post('/register', async (req, res) => {
-//     const { name, email, password } = req.body;
-    
-//     try {
-//         // si el correo electrónico ya está registrado
-//         const existingUser = await Usuario.findOne({ where: { email } });
-        
-//         if (existingUser) {
-//             // Si el correo ya está registrado, mostrar mensaje de error
-//             return res.render('register', { error: 'Este correo electrónico ya está registrado' });
-//         }
-         
-//         const newUser = await Usuario.create({ name, email, password });
-//         res.redirect('/login'); 
-//     } catch (error) {
-//         console.error('Error en registro:', error);
-//         res.status(500).send('Error interno del servidor');
-//     }
-// });
-
-
-
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    
+
     try {
-        const user = await Usuario.findOne({ where: { email, password } });
-        
-        if (user) {
-            res.redirect('/inicio'); 
-        } else {
-            res.render('login', { error: 'Credenciales inválidas, intente de nuevo'});
+        // Verifica si el correo electrónico está registrado
+        const user = await Usuario.findOne({ where: { email } });
+
+        if (!user) {
+            // Si el usuario no existe, enviar un mensaje de error
+            return res.status(400).json({ error: 'Correo electrónico o contraseña incorrectos' });
         }
+
+        // Verifica la contraseña (esto es solo un ejemplo, deberías usar hashing en producción)
+        if (user.password !== password) {
+            return res.status(400).json({ error: 'Correo electrónico o contraseña incorrectos' });
+        }
+
+        // Iniciar sesión exitoso
+        res.status(200).json({ message: 'Inicio de sesión exitoso' });
     } catch (error) {
-        console.error('Error en login:', error);
-        res.status(500).send('Error interno del servidor');
+        console.error('Error en inicio de sesión:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
 
 app.listen(app.get('port'), () =>
 console.log('Servidor escuchando en puerto ', app.get('port')));
 console.log("Corriendo")
-
-// app.get('/users/:id', async (req, res) => {
-    //     const user = await Usuario.findByPk(req.params.id);
-    //     res.json(user);
-    // });
-    
-    
-    
-    // app.put('/users/:id', async (req, res) => {
-        //     const user = await Usuario.findByPk(req.params.id);
-        //     if (user) {
-            //         await user.update(req.body);
-            //         res.json(user);
-            //     } else {
-                //         res.status(404).json({ message: 'User not found' });
-                //     }
-                // });
-                
-    // app.delete('/users/:id', async (req, res) => {
-    //     const user = await Usuario.findByPk(req.params.id);
-    //     if (user) {
-    //         await user.destroy();
-    //         res.json({ message: 'User deleted' });
-    //     } else {
-    //         res.status(404).json({ message: 'User not found' });
-    //     }
-    // });
-                
 
