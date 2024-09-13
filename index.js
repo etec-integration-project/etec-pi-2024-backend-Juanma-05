@@ -37,7 +37,6 @@ const sequelize = new Sequelize(
 
     class Usuario extends Model { }
     Usuario.init({
-        name: DataTypes.STRING,
         email: DataTypes.STRING,
         password: DataTypes.STRING
     }, { sequelize, modelName: 'usuario' });
@@ -45,7 +44,8 @@ const sequelize = new Sequelize(
     class Productos extends Model { }
     Productos.init({
         product: DataTypes.STRING,
-        price: DataTypes.NUMBER,
+        price: DataTypes.FLOAT,
+        suela: DataTypes.STRING,
         url: DataTypes.STRING,
 
     }, { sequelize, modelName: 'productos' });
@@ -71,6 +71,10 @@ app.post('/products', async (req, res) => {
     const product = await Productos.create(req.body);
     res.json(product);
 });
+app.get('/products', async (req, res) => {
+    const products = await Productos.findAll();
+    res.json(products);
+});
 
 
 app.get('/login', (req, res) => {
@@ -83,7 +87,7 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
     
     try {
         // Verifica si el correo electrónico ya está registrado
@@ -95,7 +99,7 @@ app.post('/register', async (req, res) => {
         }
         
         // Crea un nuevo usuario
-        const newUser = await Usuario.create({ name, email, password });
+        const newUser = await Usuario.create({ email, password });
         res.status(200).json({ message: 'Registro exitoso' });
     } catch (error) {
         console.error('Error en registro:', error);
