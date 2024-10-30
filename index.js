@@ -68,10 +68,33 @@ app.post('/users', async (req, res) => {
 });
 
 app.post('/products', async (req, res) => {
-    const product = await Productos.create(req.body);
-    res.json(product);
+    const { product, url } = req.body; // Desestructura los campos necesarios
+
+    try {
+        // Verifica si ya existe un producto con el mismo nombre o URL
+        const existingProduct = await Productos.findOne({
+            where: {
+                [Sequelize.Op.or]: [{ product: product }, { url: url }]
+            }
+        });
+
+        if (existingProduct) {
+            // Si ya existe, retorna un mensaje de error
+            return res.status(409).json({ error: 'Ya existe un producto con este nombre o URL' });
+        }
+
+        // Si no existe, crea el nuevo producto
+        const newProduct = await Productos.create(req.body);
+        res.status(201).json(newProduct); // Retorna el nuevo producto con un estado 201 (creado)
+    } catch (error) {
+        console.error('Error al crear el producto:', error); // Para depurar errores
+        res.status(500).json({ error: 'Error al crear el producto.' });
+    }
 });
+
+
 app.get('/products', async (req, res) => {
+
     const products = await Productos.findAll();
     res.json(products);
 });

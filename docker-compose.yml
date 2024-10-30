@@ -5,7 +5,7 @@ services:
   mysqldb:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: Backend
 
     ports:
@@ -26,6 +26,6 @@ services:
       # MYSQL_DATABASE: faztdb
       - DATABASE_NAME=Backend
       - DATABASE_USERNAME=root
-      - DATABASE_PASSWORD=123456
+      - DATABASE_PASSWORD=root
       - DATABASE_HOST=mysqldb
       
