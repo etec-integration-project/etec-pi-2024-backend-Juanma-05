@@ -20,7 +20,7 @@ services:
     links:
       - mysqldb
     ports:
-      - 3000:3000
+      - 3001:3001 #modificado para que corra en el puerto 3001
     environment:
       # MYSQL_ROOT_PASSWORD: 123456
       # MYSQL_DATABASE: faztdb

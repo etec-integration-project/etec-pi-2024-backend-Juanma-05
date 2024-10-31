@@ -13,7 +13,7 @@ app.use(cors());
 
 
 //Configuracion
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3001);
 
 config();
 
@@ -98,6 +98,26 @@ app.get('/products', async (req, res) => {
     const products = await Productos.findAll();
     res.json(products);
 });
+
+app.delete('/delete', async (req, res) => {
+    const { id } = req.body; // Asegúrate de recibir el ID del cuerpo de la solicitud
+
+    try {
+        const deletedProduct = await Productos.destroy({
+            where: { id: id } // Elimina el producto basado en el ID recibido
+        });
+
+        if (deletedProduct) {
+            return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+        } else {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        res.status(500).json({ error: 'Error al eliminar el producto.' });
+    }
+});
+
 
 
 app.get('/login', (req, res) => {
