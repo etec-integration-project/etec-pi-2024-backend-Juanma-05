@@ -50,6 +50,15 @@ const sequelize = new Sequelize(
 
     }, { sequelize, modelName: 'productos' });
 
+    class Carrito extends Model { }
+    Carrito.init({
+        product: DataTypes.STRING,
+        price: DataTypes.FLOAT,
+        suela: DataTypes.STRING,
+        url: DataTypes.STRING,
+
+    }, { sequelize, modelName: 'carrito' });
+
 
 sequelize.sync();
 
@@ -98,6 +107,32 @@ app.get('/products', async (req, res) => {
     const products = await Productos.findAll();
     res.json(products);
 });
+
+app.post('/carrito', async (req, res) => {
+    const { id, product, url, price, suela } = req.body;
+
+    try {
+        // Verifica si el producto ya está en el carrito
+        let existingProduct = await Carrito.findOne({
+            where: { product: product }
+        });
+
+        if (existingProduct) {
+            // Si ya existe, incrementa la cantidad
+            existingProduct.cantidad += 1;
+            await existingProduct.save();
+            return res.status(200).json(existingProduct);
+        }
+
+        // De lo contrario, agrega un nuevo producto con cantidad 1
+        const newProduct = await Carrito.create({ ...req.body, cantidad: 1 });
+        res.status(201).json(newProduct);
+    } catch (error) {
+        console.error('Error al agregar producto al carrito:', error);
+        res.status(500).json({ error: 'Error al agregar producto al carrito.' });
+    }
+});
+
 
 app.delete('/delete', async (req, res) => {
     const { id } = req.body; // Asegúrate de recibir el ID del cuerpo de la solicitud
