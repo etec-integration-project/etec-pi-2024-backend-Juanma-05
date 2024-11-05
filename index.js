@@ -1,31 +1,24 @@
-import express from "express"
+import express from "express";
 import bodyParser from 'body-parser';
 import { Sequelize, Model, DataTypes } from 'sequelize';
-import { config } from "dotenv"
+import { config } from "dotenv";
 import cors from 'cors';
 
 
-//inicializacion
-const app = express()
-
+// Inicialización
+const app = express();
 app.set('view engine', 'ejs');
 app.use(cors());
 
-
-//Configuracion
+// Configuración
 app.set('port', process.env.PORT || 3001);
-
 config();
 
-//
-const database = process.env.DATABASE_NAME
-console.log(database)
-const username = process.env.DATABASE_USERNAME
-console.log(username)
-const password = process.env.DATABASE_PASSWORD
-console.log(password)
-const host = process.env.DATABASE_HOST
-console.log(host)
+const database = process.env.DATABASE_NAME;
+const username = process.env.DATABASE_USERNAME;
+const password = process.env.DATABASE_PASSWORD;
+const host = process.env.DATABASE_HOST;
+
 const sequelize = new Sequelize(
     database,
     username,
@@ -33,35 +26,34 @@ const sequelize = new Sequelize(
     {
         dialect: 'mysql',
         host: host
-    });
+    }
+);
 
-    class Usuario extends Model { }
-    Usuario.init({
-        email: DataTypes.STRING,
-        password: DataTypes.STRING
-    }, { sequelize, modelName: 'usuario' });
+class Usuario extends Model { }
+Usuario.init({
+    email: DataTypes.STRING,
+    password: DataTypes.STRING
+}, { sequelize, modelName: 'usuario' });
 
-    class Productos extends Model { }
-    Productos.init({
-        product: DataTypes.STRING,
-        price: DataTypes.FLOAT,
-        suela: DataTypes.STRING,
-        url: DataTypes.STRING,
+// Corrección aquí: elimina la duplicación de `Carrito` y usa `Producto`
+class Producto extends Model { }
+Producto.init({
+    product: DataTypes.STRING,
+    price: DataTypes.FLOAT,
+    suela: DataTypes.STRING,
+    url: DataTypes.STRING,
+}, { sequelize, modelName: 'producto' });
 
-    }, { sequelize, modelName: 'productos' });
-
-    class Carrito extends Model { }
-    Carrito.init({
-        product: DataTypes.STRING,
-        price: DataTypes.FLOAT,
-        suela: DataTypes.STRING,
-        url: DataTypes.STRING,
-
-    }, { sequelize, modelName: 'carrito' });
-
+// Mantenemos solo una definición de `Carrito`
+class Carrito extends Model { }
+Carrito.init({
+    product: DataTypes.STRING,
+    price: DataTypes.FLOAT,
+    suela: DataTypes.STRING,
+    url: DataTypes.STRING,
+}, { sequelize, modelName: 'carrito' });
 
 sequelize.sync();
-
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -77,34 +69,29 @@ app.post('/users', async (req, res) => {
 });
 
 app.post('/products', async (req, res) => {
-    const { product, url } = req.body; // Desestructura los campos necesarios
+    const { product, url } = req.body;
 
     try {
-        // Verifica si ya existe un producto con el mismo nombre o URL
-        const existingProduct = await Productos.findOne({
+        const existingProduct = await Producto.findOne({
             where: {
                 [Sequelize.Op.or]: [{ product: product }, { url: url }]
             }
         });
 
         if (existingProduct) {
-            // Si ya existe, retorna un mensaje de error
             return res.status(409).json({ error: 'Ya existe un producto con este nombre o URL' });
         }
 
-        // Si no existe, crea el nuevo producto
-        const newProduct = await Productos.create(req.body);
-        res.status(201).json(newProduct); // Retorna el nuevo producto con un estado 201 (creado)
+        const newProduct = await Producto.create(req.body);
+        res.status(201).json(newProduct);
     } catch (error) {
-        console.error('Error al crear el producto:', error); // Para depurar errores
+        console.error('Error al crear el producto:', error);
         res.status(500).json({ error: 'Error al crear el producto.' });
     }
 });
 
-
 app.get('/products', async (req, res) => {
-
-    const products = await Productos.findAll();
+    const products = await Producto.findAll();
     res.json(products);
 });
 
@@ -112,19 +99,16 @@ app.post('/carrito', async (req, res) => {
     const { id, product, url, price, suela } = req.body;
 
     try {
-        // Verifica si el producto ya está en el carrito
         let existingProduct = await Carrito.findOne({
             where: { product: product }
         });
 
         if (existingProduct) {
-            // Si ya existe, incrementa la cantidad
             existingProduct.cantidad += 1;
             await existingProduct.save();
             return res.status(200).json(existingProduct);
         }
 
-        // De lo contrario, agrega un nuevo producto con cantidad 1
         const newProduct = await Carrito.create({ ...req.body, cantidad: 1 });
         res.status(201).json(newProduct);
     } catch (error) {
@@ -133,13 +117,17 @@ app.post('/carrito', async (req, res) => {
     }
 });
 
+app.get('/carrito', async (req, res) => {
+    const carrito = await Carrito.findAll();
+    res.json(carrito);
+});
 
 app.delete('/delete', async (req, res) => {
-    const { id } = req.body; // Asegúrate de recibir el ID del cuerpo de la solicitud
+    const { id } = req.body;
 
     try {
-        const deletedProduct = await Productos.destroy({
-            where: { id: id } // Elimina el producto basado en el ID recibido
+        const deletedProduct = await Producto.destroy({
+            where: { id: id }
         });
 
         if (deletedProduct) {
@@ -153,30 +141,43 @@ app.delete('/delete', async (req, res) => {
     }
 });
 
+app.delete('/deleteCarrito', async (req, res) => {
+    const { id } = req.body;
 
+    try {
+        const deletedProduct = await Carrito.destroy({
+            where: { id: id }
+        });
+
+        if (deletedProduct) {
+            return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+        } else {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        res.status(500).json({ error: 'Error al eliminar el producto.' });
+    }
+});
 
 app.get('/login', (req, res) => {
     res.render('login');
 });
 
-// Renderizar página de registro
 app.get('/register', (req, res) => {
     res.render('register');
 });
 
 app.post('/register', async (req, res) => {
     const { email, password } = req.body;
-    
+
     try {
-        // Verifica si el correo electrónico ya está registrado
         const existingUser = await Usuario.findOne({ where: { email } });
-        
+
         if (existingUser) {
-            // Si el correo ya está registrado, enviar un mensaje de error en formato JSON
             return res.status(400).json({ error: 'Este correo electrónico ya está registrado' });
         }
-        
-        // Crea un nuevo usuario
+
         const newUser = await Usuario.create({ email, password });
         res.status(200).json({ message: 'Registro exitoso' });
     } catch (error) {
@@ -185,25 +186,20 @@ app.post('/register', async (req, res) => {
     }
 });
 
-
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Verifica si el correo electrónico está registrado
         const user = await Usuario.findOne({ where: { email } });
 
         if (!user) {
-            // Si el usuario no existe, enviar un mensaje de error
-            return res.status(400).json({ error: 'Correo electrónico o contraseña incorrectos' });
+            return res.status(404).json({ error: 'Correo electrónico no registrado' });
         }
 
-        // Verifica la contraseña (esto es solo un ejemplo, deberías usar hashing en producción)
         if (user.password !== password) {
-            return res.status(400).json({ error: 'Correo electrónico o contraseña incorrectos' });
+            return res.status(401).json({ error: 'Contraseña incorrecta' });
         }
 
-        // Iniciar sesión exitoso
         res.status(200).json({ message: 'Inicio de sesión exitoso' });
     } catch (error) {
         console.error('Error en inicio de sesión:', error);
@@ -212,7 +208,4 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.listen(app.get('port'), () =>
-console.log('Servidor escuchando en puerto ', app.get('port')));
-console.log("Corriendo")
-
+app.listen(app.get('port'), () => console.log('Servidor escuchando en puerto ', app.get('port')));
