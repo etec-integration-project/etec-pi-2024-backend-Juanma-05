@@ -1,17 +1,12 @@
-version: '3.8'
-
 services:
 
   mysqldb:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: Backend
-
-    ports:
-      - 3306:3306
+      MYSQL_DATABASE: backend
     volumes:
-        - /tmp/data/:/var/lib/mysql
+        - ./data/:/var/lib/mysql
 
   app:
     build: .
@@ -24,7 +19,7 @@ services:
     environment:
       # MYSQL_ROOT_PASSWORD: 123456
       # MYSQL_DATABASE: faztdb
-      - DATABASE_NAME=Backend
+      - DATABASE_NAME=backend
       - DATABASE_USERNAME=root
       - DATABASE_PASSWORD=1234
       - DATABASE_HOST=mysqldb
