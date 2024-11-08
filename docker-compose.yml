@@ -6,7 +6,7 @@ services:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: backend
     volumes:
-        - ./data/:/var/lib/mysql
+      - ./data/:/var/lib/mysql
 
   app:
     build: .
@@ -15,7 +15,7 @@ services:
     links:
       - mysqldb
     ports:
-      - 3001:3001 #modificado para que corra en el puerto 3001
+      - 3001:3001 # modificado para que corra en el puerto 3001
     environment:
       # MYSQL_ROOT_PASSWORD: 123456
       # MYSQL_DATABASE: faztdb
@@ -23,4 +23,17 @@ services:
       - DATABASE_USERNAME=root
       - DATABASE_PASSWORD=1234
       - DATABASE_HOST=mysqldb
-      
+
+  frontend:
+    build:
+      context: https://github.com/etec-integration-project/first-tdd-Juanma-05.git
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Puerto para el frontend
+    depends_on:
+      - app # Asegura que el backend se levante antes que el frontend
+    networks:
+      - app_network
+
+networks:
+  app_network:
