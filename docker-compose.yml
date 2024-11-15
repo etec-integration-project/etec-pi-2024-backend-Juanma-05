@@ -1,4 +1,75 @@
+# # services:
+
+# #   mysqldb:
+# #     image: mysql:latest
+# #     environment:
+# #       MYSQL_ROOT_PASSWORD: 1234
+# #       MYSQL_DATABASE: backend
+# #     volumes:
+# #       - ./data/:/var/lib/mysql
+
+# #   app:
+# #     build: .
+# #     depends_on:
+# #       - mysqldb
+# #     # links:
+# #     #   - mysqldb
+# #     ports:
+# #       - 3001:3001 # modificado para que corra en el puerto 3001
+# #     environment:
+# #       # MYSQL_ROOT_PASSWORD: 123456
+# #       # MYSQL_DATABASE: faztdb
+# #       - DATABASE_NAME=backend
+# #       - DATABASE_USERNAME=root
+# #       - DATABASE_PASSWORD=1234
+# #       - DATABASE_HOST=mysqldb
+
+# #   frontend:
+# #     build:
+# #       context: https://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@github.com/etec-integration-project/first-tdd-Juanma-05.git
+# #       dockerfile: Dockerfile
+# #     ports:
+# #       - "3000:3000" # Puerto para el frontend
+# #     depends_on:
+# #       - app # Asegura que el backend se levante antes que el frontend
+# #     networks:
+# #       - app_network
+
+# # networks:
+# #   app_network:
+# version: '3.8'
+
 # services:
+#   backend:
+#     build:
+#       context: https://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@github.com/etec-integration-project/etec-pi-2024-backend-Juanma-05.git  # Ruta al código fuente del backend
+#       dockerfile: Dockerfile  # Asegúrate de que el Dockerfile se llama correctamente
+#     ports:
+#       - "5001:5000"  # Puerto en el que estará el backend
+#     environment:
+#       - MYSQLDB_HOST=mysqldb  # Variables de entorno necesarias
+#       - MYSQLDB_USER=root
+#       - MYSQLDB_PASSWORD=1234
+#       - MYSQLDB_DATABASE=backend
+#     depends_on:
+#       - mysqldb  # Asegura que el backend depende de la base de datos
+#     networks:
+#       - app_network
+#     restart: always
+
+#   frontend:
+#     build:
+#       context: https://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@github.com/etec-integration-project/first-tdd-Juanma-05.git
+#       dockerfile: Dockerfile  # El Dockerfile del frontend
+#     ports:
+#       - "3001:3000"  # Puerto donde se ejecutará el frontend
+#     depends_on:
+#       - backend  # El frontend depende de que el backend esté disponible
+#     environment:
+#       - REACT_APP_BACKEND=http://backend:5000  # Dirección del backend
+#     networks:
+#       - app_network
+#     restart: always
 
 #   mysqldb:
 #     image: mysql:latest
@@ -6,70 +77,15 @@
 #       MYSQL_ROOT_PASSWORD: 1234
 #       MYSQL_DATABASE: backend
 #     volumes:
-#       - ./data/:/var/lib/mysql
-
-#   app:
-#     build: .
-#     depends_on:
-#       - mysqldb
-#     # links:
-#     #   - mysqldb
-#     ports:
-#       - 3001:3001 # modificado para que corra en el puerto 3001
-#     environment:
-#       # MYSQL_ROOT_PASSWORD: 123456
-#       # MYSQL_DATABASE: faztdb
-#       - DATABASE_NAME=backend
-#       - DATABASE_USERNAME=root
-#       - DATABASE_PASSWORD=1234
-#       - DATABASE_HOST=mysqldb
-
-#   frontend:
-#     build:
-#       context: https://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@github.com/etec-integration-project/first-tdd-Juanma-05.git
-#       dockerfile: Dockerfile
-#     ports:
-#       - "3000:3000" # Puerto para el frontend
-#     depends_on:
-#       - app # Asegura que el backend se levante antes que el frontend
+#       - ./data:/var/lib/mysql  # Volumen para los datos persistentes
 #     networks:
 #       - app_network
+#     restart: always
 
 # networks:
 #   app_network:
-version: '3.8'
-
+#     driver: bridge
 services:
-  backend:
-    build:
-      context: https://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@github.com/etec-integration-project/etec-pi-2024-backend-Juanma-05.git  # Ruta al código fuente del backend
-      dockerfile: Dockerfile  # Asegúrate de que el Dockerfile se llama correctamente
-    ports:
-      - "5001:5000"  # Puerto en el que estará el backend
-    environment:
-      - MYSQLDB_HOST=mysqldb  # Variables de entorno necesarias
-      - MYSQLDB_USER=root
-      - MYSQLDB_PASSWORD=1234
-      - MYSQLDB_DATABASE=backend
-    depends_on:
-      - mysqldb  # Asegura que el backend depende de la base de datos
-    networks:
-      - app_network
-    restart: always
-
-  frontend:
-    build:
-      context: https://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@github.com/etec-integration-project/first-tdd-Juanma-05.git
-      dockerfile: Dockerfile  # El Dockerfile del frontend
-    ports:
-      - "3001:3000"  # Puerto donde se ejecutará el frontend
-    depends_on:
-      - backend  # El frontend depende de que el backend esté disponible
-    environment:
-      - REACT_APP_BACKEND=http://backend:5000  # Dirección del backend
-    networks:
-      - app_network
-    restart: always
 
   mysqldb:
     image: mysql:latest
@@ -77,11 +93,33 @@ services:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: backend
     volumes:
-      - ./data:/var/lib/mysql  # Volumen para los datos persistentes
+        - ./data/:/var/lib/mysql
+  app:
+    build: .
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+    ports:
+      - 3001:3001 #modificado para que corra en el puerto 3001
+      - 3001:3001 # modificado para que corra en el puerto 3001
+    environment:
+      # MYSQL_ROOT_PASSWORD: 123456
+      # MYSQL_DATABASE: faztdb
+      - DATABASE_NAME=backend
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=1234
+      - DATABASE_HOST=mysqldb
+      
+  frontend:
+    build:
+      context: https://github.com/etec-integration-project/first-tdd-Juanma-05.git
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Puerto para el frontend
+    depends_on:
+      - app # Asegura que el backend se levante antes que el frontend
     networks:
       - app_network
-    restart: always
-
 networks:
   app_network:
-    driver: bridge
