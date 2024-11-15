@@ -1,14 +1,20 @@
-FROM node:18-slim
+# Usar una imagen de Node para el backend (o la imagen que necesites para tu backend)
+FROM node:20-alpine
 
-WORKDIR /myapp
-COPY package.json .
+WORKDIR /app
+
+# Copiar el código fuente del backend
+COPY . .
+
+# Copiar los archivos de configuración de nginx desde el contexto de construcción (asegúrate de que existan)
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Instalar dependencias y construir el backend (si es necesario)
 RUN npm install
 
-COPY . .
-CMD npm start 
+# Exponer el puerto en el que se ejecuta el backend
+EXPOSE 5000
 
-
-##entrar a la base de datos local, con el host:127.0.0.1 | port:3006
-##ahi crear el esquema con la base de datos "backend"
-##para corroborar los metodos post-get abrir postam  poner http://localhost:3000/users
-##https://www.youtube.com/watch?v=pDky0NPvzZ8
+# Comando para iniciar el servidor
+CMD ["npm", "start"]
