@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Copiar los archivos de configuración de nginx desde el contexto de construcción (asegúrate de que existan)
-COPY nginx.conf nginx/nginx.conf
+COPY nginx.conf etc/nginx/nginx.conf
 # COPY default.conf nginx/conf.d/default.conf
 
 # Instalar dependencias y construir el backend (si es necesario)
