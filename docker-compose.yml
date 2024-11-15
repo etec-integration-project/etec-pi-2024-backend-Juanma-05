@@ -62,7 +62,7 @@ services:
       context: https://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@github.com/etec-integration-project/first-tdd-Juanma-05.git
       dockerfile: Dockerfile  # El Dockerfile del frontend
     ports:
-      - "3000:3000"  # Puerto donde se ejecutará el frontend
+      - "3001:3000"  # Puerto donde se ejecutará el frontend
     depends_on:
       - backend  # El frontend depende de que el backend esté disponible
     environment:
