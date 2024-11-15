@@ -111,15 +111,15 @@ services:
       - DATABASE_PASSWORD=1234
       - DATABASE_HOST=mysqldb
       
-  frontend:
-    build:
-      context: https://github.com/etec-integration-project/first-tdd-Juanma-05.git
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000" # Puerto para el frontend
-    depends_on:
-      - app # Asegura que el backend se levante antes que el frontend
-    networks:
-      - app_network
+  # frontend:
+  #   build:
+  #     context: https://github.com/etec-integration-project/first-tdd-Juanma-05.git
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000" # Puerto para el frontend
+  #   depends_on:
+  #     - app # Asegura que el backend se levante antes que el frontend
+  #   networks:
+  #     - app_network
 networks:
   app_network:
