@@ -45,7 +45,7 @@ services:
       context: https://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@github.com/etec-integration-project/etec-pi-2024-backend-Juanma-05.git  # Ruta al código fuente del backend
       dockerfile: Dockerfile  # Asegúrate de que el Dockerfile se llama correctamente
     ports:
-      - "5000:5000"  # Puerto en el que estará el backend
+      - "5001:5000"  # Puerto en el que estará el backend
     environment:
       - MYSQLDB_HOST=mysqldb  # Variables de entorno necesarias
       - MYSQLDB_USER=root
