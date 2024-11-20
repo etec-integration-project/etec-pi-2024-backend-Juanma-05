@@ -1,1 +1,2 @@
 FROM ngnix:1.27.1
+ADD https://raw.githubusercontent.com/etec-integration-project/etec-pi-2024-backend-Juanma-05/refs/heads/main/nginx/nginx.conf /etc/nginx/nginx.conf

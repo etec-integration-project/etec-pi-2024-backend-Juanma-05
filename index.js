@@ -58,17 +58,17 @@ sequelize.sync();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
     const users = await Usuario.findAll();
     res.json(users);
 });
 
-app.post('/users', async (req, res) => {
+app.post('/api/users', async (req, res) => {
     const user = await Usuario.create(req.body);
     res.json(user);
 });
 
-app.post('/products', async (req, res) => {
+app.post('/api/products', async (req, res) => {
     const { product, url } = req.body;
 
     try {
@@ -90,12 +90,12 @@ app.post('/products', async (req, res) => {
     }
 });
 
-app.get('/products', async (req, res) => {
+app.get('/api/products', async (req, res) => {
     const products = await Producto.findAll();
     res.json(products);
 });
 
-app.post('/carrito', async (req, res) => {
+app.post('/api/carrito', async (req, res) => {
     const { id, product, url, price, suela } = req.body;
 
     try {
@@ -117,12 +117,12 @@ app.post('/carrito', async (req, res) => {
     }
 });
 
-app.get('/carrito', async (req, res) => {
+app.get('/api/carrito', async (req, res) => {
     const carrito = await Carrito.findAll();
     res.json(carrito);
 });
 
-app.delete('/delete', async (req, res) => {
+app.delete('/api/delete', async (req, res) => {
     const { id } = req.body;
 
     try {
@@ -141,7 +141,7 @@ app.delete('/delete', async (req, res) => {
     }
 });
 
-app.delete('/deleteCarrito', async (req, res) => {
+app.delete('/api/deleteCarrito', async (req, res) => {
     const { id } = req.body;
 
     try {
@@ -160,15 +160,15 @@ app.delete('/deleteCarrito', async (req, res) => {
     }
 });
 
-app.get('/login', (req, res) => {
+app.get('/api/login', (req, res) => {
     res.render('login');
 });
 
-app.get('/register', (req, res) => {
+app.get('/api/register', (req, res) => {
     res.render('register');
 });
 
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -186,7 +186,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
