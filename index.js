@@ -54,6 +54,22 @@ Carrito.init({
 }, { sequelize, modelName: 'carrito' });
 
 sequelize.sync();
+sequelize.sync().then(async () => {
+    try {
+        // Crear un usuario administrador solo si no existe
+        const [adminUser, created] = await Usuario.findOrCreate({
+            where: { email: 'admin@admin' },
+            defaults: {
+                email: 'admin@admin',
+                password: 'admin', // Asegúrate de encriptar la contraseña en producción
+            }
+        });
+    } catch (error) {
+        console.error('Error al crear el usuario administrador:', error);
+    }
+});
+
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
