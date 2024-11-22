@@ -51,6 +51,7 @@ Carrito.init({
     price: DataTypes.FLOAT,
     suela: DataTypes.STRING,
     url: DataTypes.STRING,
+    user: DataTypes.STRING // Nuevo campo
 }, { sequelize, modelName: 'carrito' });
 
 sequelize.sync();
@@ -112,11 +113,11 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.post('/api/carrito', async (req, res) => {
-    const { id, product, url, price, suela } = req.body;
+    const { id, product, url, price, suela, user } = req.body;
 
     try {
         let existingProduct = await Carrito.findOne({
-            where: { product: product }
+            where: { product: product, user: user}
         });
 
         if (existingProduct) {
@@ -125,7 +126,7 @@ app.post('/api/carrito', async (req, res) => {
             return res.status(200).json(existingProduct);
         }
 
-        const newProduct = await Carrito.create({ ...req.body, cantidad: 1 });
+        const newProduct = await Carrito.create({product, url, price, suela, user, cantidad: 1});
         res.status(201).json(newProduct);
     } catch (error) {
         console.error('Error al agregar producto al carrito:', error);
@@ -134,9 +135,20 @@ app.post('/api/carrito', async (req, res) => {
 });
 
 app.get('/api/carrito', async (req, res) => {
-    const carrito = await Carrito.findAll();
-    res.json(carrito);
+    const { user } = req.query;
+
+    try {
+        const carrito = user
+            ? await Carrito.findAll({ where: { user } })
+            : await Carrito.findAll();
+
+        res.json(carrito);
+    } catch (error) {
+        console.error('Error al obtener el carrito:', error);
+        res.status(500).json({ error: 'Error al obtener el carrito.' });
+    }
 });
+
 
 app.delete('/api/delete', async (req, res) => {
     const { id } = req.body;
